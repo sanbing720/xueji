@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>查询学籍</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        button[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #f6f6f6;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            padding: 20px;
+            background-color: #f6f6f6;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            text-align: center;
+            z-index: 9999;
+        }
+
+        .popup-show {
+            display: block;
+        }
+
+        .popup-button {
+            display: block;
+            margin: 20px auto;
+            padding: 15px 30px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 5px;
+            border: none;
+            cursor: pointer;
+            font-size: 24px;
+            font-weight: bold;
+            box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.25);
+        }
+
+        .popup-button:hover {
+            background-color: #45a049;
+        }
+
+        .popup-close {
+            display: block;
+            margin: 10px auto;
+            padding: 5px 10px;
+            background-color: #ccc;
+            border: none;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <h1>查询学籍</h1>
+    <form id="query-form">
+        <label for="name">姓名：</label>
+        <input type="text" id="name" required><br><br>
+        <label for="sfz">身份证号码：</label>
+        <input type="text" id="sfz" required><br><br>
+        <button type="submit">查询学籍</button>
+    </form>
+
+    <div id="result"></div>
+
+    <button class="popup-button" onclick="showPopup()">高一6班王长旭喜欢干啥</button>
+
+    <div id="popup" class="popup">
+        <span id="popup-content"></span>
+        <button class="popup-close" onclick="hidePopup()">关闭</button>
+    </div>
+
+    <script>
+        function showPopup() {
+            var popup = document.getElementById("popup");
+            var popupContent = document.getElementById("popup-content");
+
+            popupContent.textContent = "王长旭喜欢倒灌";
+            popup.classList.add("popup-show");
+        }
+
+        function hidePopup() {
+            var popup = document.getElementById("popup");
+            popup.classList.remove("popup-show");
+        }
+
+        document.getElementById("query-form").addEventListener("submit", function(event) {
+            event.preventDefault(); // 阻止表单提交
+
+            var name = document.getElementById("name").value;
+            var sfz = document.getElementById("sfz").value;
+
+            var data = {
+                "userName": name,
+                "loginInfo": "G" + sfz,
+                "password": sfz.substr(12, 6),
+                "sourceId": "1"
+            };
+
+            fetch("https://service-k329zabl-1251413566.sh.apigw.tencentcs.com/client/Author/userName/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            })
+            .then(function(response) {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("请求失败，请重试！");
+                }
+            })
+            .then(function(data) {
+                document.getElementById("result").textContent = JSON.stringify(data);
+            })
+            .catch(function(error) {
+                document.getElementById("result").textContent = error.message;
+            });
+        });
+    </script>
+</body>
+</html>
+
+
